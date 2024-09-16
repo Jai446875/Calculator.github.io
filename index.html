@@ -1,60 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Meta information about the character encoding and viewport settings -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- The title of the webpage that will appear in the browser tab -->
     <title>Grade Calculator</title>
+
+    <!-- Internal CSS styles to control the look and feel of the page -->
     <style>
+        /* Styling for the body: font and margin */
         body {
-            font-family: Arial, sans-serif;
-            margin: 50px;
+            font-family: Arial, sans-serif; /* Sets the font */
+            margin: 50px; /* Adds space around the content */
         }
+
+        /* Styling for the heading (h1) element */
         h1 {
-            color: #333;
+            color: #333; /* A dark gray color for the heading text */
         }
+
+        /* Styling for input fields and buttons */
         input, button {
-            margin: 10px 0;
+            margin: 10px 0; /* Adds space above and below inputs and buttons */
         }
+
+        /* Styling for the message displayed after calculation */
         .message {
-            margin-top: 20px;
-            font-weight: bold;
+            margin-top: 20px; /* Adds space above the message */
+            font-weight: bold; /* Makes the message text bold */
         }
     </style>
 </head>
 <body>
 
+    <!-- Main heading of the page -->
     <h1>Grade Calculator</h1>
 
+    <!-- Form element for grade input and calculation -->
     <form id="gradeForm">
+        <!-- Label for the Prelim grade input -->
         <label>Prelim Grade:</label>
+
+        <!-- Input field for the user to enter their Prelim grade -->
         <input type="text" id="prelim" placeholder="Enter your Prelim grade">
+
+        <!-- Button to submit and calculate the result -->
         <button>Calculate</button>
     </form>
 
+    <!-- Div where the result message will be displayed -->
     <div id="resultMessage" class="message"></div>
 
+    <!-- JavaScript section for handling the form submission and calculation -->
     <script>
+        // When the form is submitted, run this function
         document.getElementById('gradeForm').onsubmit = function(event) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent the page from refreshing
 
+            // Get the value entered in the prelim input field
             var prelimGrade = document.getElementById('prelim').value;
+
+            // Variable to store the result message
             var message = "";
 
+            // Check if the input is not a number or out of the valid range (0-100)
             if (isNaN(prelimGrade) || prelimGrade < 0 || prelimGrade > 100) {
-                message = "Please enter a valid grade between 0 and 100.";
+                message = "Please enter a valid grade between 0 and 100."; // Error message for invalid input
             } else if (prelimGrade > 90) {
-                message = "You've already passed with your Prelim grade! Edi Wow:)";
+                message = "You've already passed with your Prelim grade! Edi Wow:)"; // Message for high grades
             } else if (prelimGrade < 75) {
-                message = "Unfortunately, you can't pass.";
+                message = "Unfortunately, you can't pass."; // Message for very low grades
             } else {
+                // Calculate the required grade to pass (average of Prelim, Midterm, and Final should be 75)
                 var required = (225 - prelimGrade) / 2;
+
+                // Check if the required grade is more than 100 (impossible to achieve)
                 if (required > 100) {
-                    message = "You need more than 100 in Midterms/Finals to pass.";
+                    message = "You need more than 100 in Midterms/Finals to pass."; // Message for impossible requirements
                 } else {
-                    message = "You need at least " + required.toFixed(2) + " in Midterms and Finals.";
+                    message = "You need at least " + required.toFixed(2) + " in Midterms and Finals."; // Success message with calculated requirement
                 }
             }
 
+            // Display the result message in the resultMessage div
             document.getElementById('resultMessage').innerText = message;
         };
     </script>
