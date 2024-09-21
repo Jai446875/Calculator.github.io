@@ -1,90 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta information about the character encoding and viewport settings -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- The title of the webpage that will appear in the browser tab -->
     <title>Grade Calculator</title>
-
-    <!-- Internal CSS styles to control the look and feel of the page -->
     <style>
-        /* Styling for the body: font and margin */
+
         body {
-            font-family: Arial, sans-serif; /* Sets the font */
-            margin: 50px; /* Adds space around the content */
+            font-family: Arial, sans-serif;
+            margin: 0; 
+            height: 100vh; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: beige; 
         }
 
-        /* Styling for the heading (h1) element */
+   
+        .container {
+            background-color: white; 
+            padding: 20px;          
+            border-radius: 10px;     
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            max-width: 500px;      
+            width: 100%;             
+            box-sizing: border-box;
+        }
+
         h1 {
-            color: #333; /* A dark gray color for the heading text */
+            color: #333;
         }
 
-        /* Styling for input fields and buttons */
         input, button {
-            margin: 10px 0; /* Adds space above and below inputs and buttons */
+            margin: 10px 0;
+            padding: 5px;
+            width: 100%;            
+            box-sizing: border-box;   
         }
 
-        /* Styling for the message displayed after calculation */
         .message {
-            margin-top: 20px; /* Adds space above the message */
-            font-weight: bold; /* Makes the message text bold */
+            margin-top: 20px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <!-- Main heading of the page -->
-    <h1>Grade Calculator</h1>
+    <div class="container">
+        <h1>Grade Calculator</h1>
 
-    <!-- Form element for grade input and calculation -->
-    <form id="gradeForm">
-        <!-- Label for the Prelim grade input -->
-        <label>Prelim Grade:</label>
+        <form id="gradeForm">
+            <label>Prelim Grade:</label>
+            <input type="text" id="prelim" placeholder="Enter your Prelim grade">
+            <button>Calculate</button>
+        </form>
 
-        <!-- Input field for the user to enter their Prelim grade -->
-        <input type="text" id="prelim" placeholder="Enter your Prelim grade">
+        <div id="resultMessage" class="message"></div>
+    </div>
 
-        <!-- Button to submit and calculate the result -->
-        <button>Calculate</button>
-    </form>
-
-    <!-- Div where the result message will be displayed -->
-    <div id="resultMessage" class="message"></div>
-
-    <!-- JavaScript section for handling the form submission and calculation -->
     <script>
-        // When the form is submitted, run this function
         document.getElementById('gradeForm').onsubmit = function(event) {
-            event.preventDefault(); // Prevent the page from refreshing
+            event.preventDefault();
 
-            // Get the value entered in the prelim input field
-            var prelimGrade = document.getElementById('prelim').value;
-
-            // Variable to store the result message
+            var prelimGrade = parseFloat(document.getElementById('prelim').value);
             var message = "";
 
-            // Check if the input is not a number or out of the valid range (0-100)
             if (isNaN(prelimGrade) || prelimGrade < 0 || prelimGrade > 100) {
-                message = "Please enter a valid grade between 0 and 100."; // Error message for invalid input
-            } else if (prelimGrade > 90) {
-                message = "You've already passed with your Prelim grade!"; // Message for high grades
-            } else if (prelimGrade < 75) {
-                message = "Unfortunately, you can't pass."; // Message for very low grades
-            } else {
-                // Calculate the required grade to pass (average of Prelim, Midterm, and Final should be 75)
-                var required = (225 - prelimGrade) / 2;
+                message = "Please enter a valid grade between 0 and 100.";
+            } else if (prelimGrade >= 90) {
+                message = "You've already passed with a Prelim grade of " + prelimGrade + ". You are also qualified for Dean's Lister!";
+            } else if (prelimGrade >= 60 && prelimGrade < 90) {
+                var requiredMidterm = ((75 - (prelimGrade * 0.2)) / 0.8) * 0.3;
+                var requiredFinal = ((75 - (prelimGrade * 0.2)) / 0.8) * 0.5;
 
-                // Check if the required grade is more than 100 (impossible to achieve)
-                if (required > 100) {
-                    message = "You need more than 100 in Midterms/Finals to pass."; // Message for impossible requirements
-                } else {
-                    message = "You need at least " + required.toFixed(2) + " in Midterms and Finals."; // Success message with calculated requirement
-                }
+                message = "To pass, you need at least " + requiredMidterm.toFixed(2) + " in Midterms and " + requiredFinal.toFixed(2) + " in Finals.";
+            } else if (prelimGrade < 60) {
+                message = "Unfortunately, with a Prelim grade of " + prelimGrade + ", it is difficult to pass.";
             }
 
-            // Display the result message in the resultMessage div
             document.getElementById('resultMessage').innerText = message;
         };
     </script>
