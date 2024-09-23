@@ -1,86 +1,131 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade Calculator</title>
-    <style>
-
-body {
-            font-family: Arial, sans-serif;
-            margin: 0; 
-            height: 100vh; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: beige; 
+    <title>Prelim Calculator</title>
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <script>
+        // Function to check if the student has passed or failed based on number of absences
+        function checkAttendance() {
+            const attendance_absences = parseInt(document.getElementById('attendance_absences').value);
+            const result = attendance_absences >= 4 ? "FAILED" : "";
+            document.getElementById('result').textContent = result;
+            // Clear other result divs
+            document.getElementById('inputted_prelim_grade').textContent = "";
+            document.getElementById('prelim_result').textContent = "";
+            document.getElementById('midterm_final_result').textContent = "";
+            document.getElementById('dean_result').textContent = "";
         }
-
-   
- .container {
-            background-color: white; 
-            padding: 20px;          
-            border-radius: 10px;     
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
-            max-width: 500px;      
-            width: 100%;             
-            box-sizing: border-box;
-        }
-
- h1 {
-            color: #333;
-        }
-
-input, button {
-            margin: 10px 0;
-            padding: 5px;
-            width: 100%;            
-            box-sizing: border-box;   
-        }
-
- .message {
-            margin-top: 20px;
-            font-weight: bold;
-        }
-    </style>
+    </script>
+    <link rel="stylesheet" href="style2.css">
 </head>
 <body>
-
-<div class="container">
-        <h1>Grade Calculator</h1>
-
-<form id="gradeForm">
-            <label>Prelim Grade:</label>
-            <input type="text" id="prelim" placeholder="Enter your Prelim grade">
-            <button>Calculate</button>
+    <div id="container">
+        <h1>Preliminary Grade Calculator</h1>
+        <!-- Form for absences -->
+        <form oninput="checkAttendance()" id="attendanceForm">
+            <label for="attendance_absences">Number of Consecutive Absences:</label>
+            <input type="number" id="attendance_absences" value="0" min="0" max="100" placeholder="Enter Number of Absences">
         </form>
 
-<div id="resultMessage" class="message"></div>
+        <!-- Form for grades -->
+<form id="gradeForm">
+            <label for="recitation_score">Recitation Score:</label>
+            <input type="number" id="recitation_score" min="1" max="100" placeholder="Enter Recitation Score">
+            
+<label for="quiz_score">Quiz Score:</label>
+            <input type="number" id="quiz_score" min="1" max="100" placeholder="Enter Quiz Score">
+            
+ <label for="requirements_grade">Requirements Grade:</label>
+            <input type="number" id="requirements_grade" min="1" max="100" placeholder="Enter Requirements Grade">
+            
+ <label for="prelim_exam_score">Prelim Exam Score:</label>
+            <input type="number" id="prelim_exam_score" min="1" max="100" placeholder="Enter Prelim Exam Score">
+            
+ <button type="button" id="calculate_button">Calculate Final Grade</button>
+ </form>
+ <!-- Result display -->
+        <div id="result" class="result"></div>
+        <div id="inputted_prelim_grade" class="result"></div>
+        <div id="prelim_result" class="result"></div>
+        <div id="midterm_final_result" class="result"></div>
+        <div id="dean_result" class="result"></div>
     </div>
+<py-script>
+        def calculate_attendance(absences):
+            if absences < 0 or absences > 4:
+                return "", None
+            if absences >= 4:
+                return "FAILED", None
+            return max(0, 100 - (absences * 10))
 
-<script>
-        document.getElementById('gradeForm').onsubmit = function(event) {
-            event.preventDefault();
+def compute_class_standing(quiz, requirements, recitation):
+            return (quiz * 0.40) + (requirements * 0.30) + (recitation * 0.30)
 
-            var prelimGrade = parseFloat(document.getElementById('prelim').value);
-            var message = "";
+ def compute_prelim_grade(absences, quiz, requirements, recitation, exam):
+            attendance_score = calculate_attendance(absences)
+            if isinstance(attendance_score, str):
+                return attendance_score, None
+            class_standing = compute_class_standing(quiz, requirements, recitation)
+            return (exam * 0.60) + (attendance_score * 0.10) + (class_standing * 0.30)
 
-            if (isNaN(prelimGrade) || prelimGrade < 0 || prelimGrade > 100) {
-                message = "Please enter a valid grade between 0 and 100.";
-            } else if (prelimGrade >= 90) {
-                message = "You've already passed with a Prelim grade of " + prelimGrade + ". You are also qualified for Dean's Lister!";
-            } else if (prelimGrade >= 60 && prelimGrade < 90) {
-                var requiredMidterm = ((75 - (prelimGrade * 0.2)) / 0.8) * 0.3;
-                var requiredFinal = ((75 - (prelimGrade * 0.2)) / 0.8) * 0.5;
+def grades_needed(prelim_grade, target):
+            midterm_needed = (target - (prelim_grade * 0.20)) / 0.80
+            final_needed = (target - (prelim_grade * 0.20)) / 0.80
+            return midterm_needed, final_needed
 
-                message = "To pass, you need at least " + requiredMidterm.toFixed(2) + " in Midterms and " + requiredFinal.toFixed(2) + " in Finals.";
-            } else if (prelimGrade < 60) {
-                message = "Unfortunately, with a Prelim grade of " + prelimGrade + ", it is difficult to pass.";
-            }
+ def calculate_final_grade(event):
+            prelim_output = ""
+            result_msg = ""
+            midterm_final_output = ""
+            dean_msg = ""
 
-            document.getElementById('resultMessage').innerText = message;
-        };
-    </script>
+try:
+                absences = int(Element("attendance_absences").value)
+                quiz = float(Element("quiz_score").value)
+                requirements = float(Element("requirements_grade").value)
+                recitation = float(Element("recitation_score").value)
+                exam = float(Element("prelim_exam_score").value)
 
+if any(score < 0 or score > 100 for score in [quiz, requirements, recitation, exam]) or absences > 4:
+                    raise ValueError("Inputs must be in the specified ranges.")
+
+ prelim_grade = compute_prelim_grade(absences, quiz, requirements, recitation, exam)
+                prelim_output = f"Your Prelim Grade is: {prelim_grade:.2f}"
+
+ if prelim_grade < 25.5:
+                    result_msg = "It's tough to pass; focus on your grades."
+                elif prelim_grade < 75:
+                    result_msg = "Aim for the required grades to pass."
+                else:
+                    result_msg = "You've passed! Keep it up!"
+
+ if prelim_grade < 75:
+                    midterm, final = grades_needed(prelim_grade, 75)
+                    midterm_final_output = f"Midterm: {midterm:.2f}, Final: {final:.2f} needed to pass."
+                else:
+                    midterm, final = grades_needed(prelim_grade, 75)
+                    midterm_final_output = f"Maintain grades above {midterm:.2f} (midterm) and {final:.2f} (final)."
+
+ if prelim_grade >= 69:
+                    midterm_dean, final_dean = grades_needed(prelim_grade, 90)
+                    dean_msg = f"To be on Dean's List, aim for {midterm_dean:.2f} (midterm) and {final_dean:.2f} (final)."
+                else:
+                    dean_msg = "Not eligible for Dean's List."
+
+except ValueError as e:
+                result_msg = f"Error: {str(e)}"
+                prelim_output = ""
+
+ Element("result").element.innerText = result_msg
+            Element("inputted_prelim_grade").element.innerText = prelim_output
+            Element("midterm_final_result").element.innerText = midterm_final_output
+            Element("dean_result").element.innerText = dean_msg
+
+ # Reset input fields
+   for field in ["attendance_absences", "quiz_score", "requirements_grade", "recitation_score", "prelim_exam_score"]:
+                Element(field).element.value = ""
+
+Element("calculate_button").element.onclick = calculate_final_grade
+    </py-script>
 </body>
 </html>
